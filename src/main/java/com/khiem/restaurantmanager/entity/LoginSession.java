@@ -15,10 +15,11 @@ import java.time.Instant;
 @Table(name = "login_session", schema = "restaurant")
 public class LoginSession {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "employee_id", nullable = false)
     private Employee employee;
 

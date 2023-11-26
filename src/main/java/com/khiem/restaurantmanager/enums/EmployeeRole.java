@@ -1,7 +1,7 @@
 package com.khiem.restaurantmanager.enums;
 
 public enum EmployeeRole {
-    WAITER, CHEF, MANAGER;
+    WAITER, CHEF, MANAGER, DEFAULT;
 
     public String text(){
         switch (this){
@@ -13,6 +13,9 @@ public enum EmployeeRole {
             }
             case MANAGER ->{
                 return "Quản lý";
+            }
+            case DEFAULT -> {
+                return "Tài khoản thuộc nhà hàng";
             }
             default -> {
                 return "";

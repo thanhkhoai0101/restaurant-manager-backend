@@ -2,9 +2,12 @@ package com.khiem.restaurantmanager.controller;
 
 import com.khiem.restaurantmanager.dto.EmployeeResponse;
 import com.khiem.restaurantmanager.entity.Employee;
+import com.khiem.restaurantmanager.enums.EmployeeRole;
 import com.khiem.restaurantmanager.reposetory.EmployeeRepository;
 import com.khiem.restaurantmanager.request.EmployeeRequest;
+import com.khiem.restaurantmanager.request.EmployeeRoleRequest;
 import org.springframework.data.domain.Page;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +35,7 @@ public class EmployeeController {
 
     @PostMapping("/register")
     public EmployeeResponse register(@RequestBody EmployeeRequest request) {
+
         if (employeeRepository.findByUsername(request.getUsername()).isPresent()) {
             return null;
         }
@@ -43,6 +47,7 @@ public class EmployeeController {
         employee.setPhoneNumber(request.getPhoneNumber());
         employee.setAvatar(request.getAvatar());
         employee.setFullName(request.getFullName());
+        employee.setRole(EmployeeRole.DEFAULT);
 
         return employeeRepository.save(employee).toEmployeeResponse();
     }
@@ -59,6 +64,23 @@ public class EmployeeController {
         employee.setPhoneNumber(request.getPhoneNumber());
         employee.setAvatar(request.getAvatar());
         employee.setFullName(request.getFullName());
+
+        return employeeRepository.save(employee).toEmployeeResponse();
+    }
+
+    @PutMapping("/set-role")
+    public EmployeeResponse setRole(@RequestBody EmployeeRoleRequest request){
+        Employee manager = (Employee) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+        if (manager.getRole() != EmployeeRole.MANAGER){
+            return null;
+        }
+
+        if (employeeRepository.findById(request.getEmployeeId()).isEmpty()){
+            return null;
+        }
+        Employee employee = employeeRepository.findById(request.getEmployeeId()).get();
+        employee.setRole(request.getEmployeeRole());
 
         return employeeRepository.save(employee).toEmployeeResponse();
     }
